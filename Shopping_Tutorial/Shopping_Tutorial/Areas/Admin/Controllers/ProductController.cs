@@ -8,8 +8,9 @@ using Shopping_Tutorial.Repository;
 namespace Shopping_Tutorial.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-    [Authorize]
-	public class ProductController : Controller
+    [Route("Admin/Product")]
+    [Authorize(Roles = "Admin")]
+    public class ProductController : Controller
 	{
 		private readonly DataContext _dataContext;
 		private readonly IWebHostEnvironment _webHostEnvironment;
@@ -18,10 +19,12 @@ namespace Shopping_Tutorial.Areas.Admin.Controllers
 			_dataContext = Context;
 			_webHostEnvironment = webHostEnvironment;
 		}
-		public async Task<IActionResult> Index()
+        [Route("Index")]
+        public async Task<IActionResult> Index()
 		{
 			return View(await _dataContext.Products.OrderByDescending(p => p.Id).Include(p => p.Category).Include(p => p.Brand).ToListAsync());
 		}
+        [Route("Create")]
         [HttpGet]
         public IActionResult Create()
         {
@@ -29,8 +32,8 @@ namespace Shopping_Tutorial.Areas.Admin.Controllers
             ViewBag.Brands = new SelectList(_dataContext.Brands, "Id", "Name");
             return View();
         }
-
-		[HttpPost]
+        [Route("Create")]
+        [HttpPost]
 		[ValidateAntiForgeryToken]
 		//lay du lieu tu form create 
 		public async Task<IActionResult> Create(ProductModel product)
@@ -83,13 +86,15 @@ namespace Shopping_Tutorial.Areas.Admin.Controllers
 			}
 			return View(product);
         }
-		public async Task<IActionResult> Edit(int Id) 
+        [Route("Edit")]
+        public async Task<IActionResult> Edit(int Id) 
 		{
 			ProductModel product = await _dataContext.Products.FindAsync(Id);
             ViewBag.Categories = new SelectList(_dataContext.Categories, "Id", "Name", product.CategoryId);
             ViewBag.Brands = new SelectList(_dataContext.Brands, "Id", "Name", product.BrandId);
             return View(product);
 		}
+        [Route("Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         //lay du lieu tu form create 
@@ -158,6 +163,7 @@ namespace Shopping_Tutorial.Areas.Admin.Controllers
             }
             return View(product);
         }
+        [Route("Delete")]
         public async Task<IActionResult> Delete(int Id)
         {
             ProductModel product = await _dataContext.Products.FindAsync(Id);

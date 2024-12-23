@@ -9,24 +9,26 @@ using Shopping_Tutorial.Repository;
 namespace Shopping_Tutorial.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-    [Authorize]
-	public class CategoryController : Controller
+    [Route("Admin/Category")]
+    [Authorize(Roles = "Admin,Publisher,Author")]
+    public class CategoryController : Controller
 	{
 		private readonly DataContext _dataContext;
 		public CategoryController(DataContext Context)
 		{
 			_dataContext = Context;			
 		}
-		public async Task<IActionResult> Index()
+        [Route("Index")]
+        public async Task<IActionResult> Index()
 		{
 			return View(await _dataContext.Categories.OrderByDescending(p => p.Id).ToListAsync());
 		}
-       
+        [Route("Create")]
         public IActionResult Create()
         {
             return View();
         }
-
+        [Route("Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoryModel category)
@@ -65,13 +67,13 @@ namespace Shopping_Tutorial.Areas.Admin.Controllers
             }
             return View(category);
         }
-
+        [Route("Edit")]
         public async Task<IActionResult> Edit(int Id)
         {
             CategoryModel category = await _dataContext.Categories.FindAsync(Id);
             return View(category);
         }
-
+        [Route("Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CategoryModel category)
@@ -110,6 +112,7 @@ namespace Shopping_Tutorial.Areas.Admin.Controllers
             }
             return View(category);
         }
+        [Route("Delete")]
         public async Task<IActionResult> Delete(int Id)
         {
             CategoryModel category = await _dataContext.Categories.FindAsync(Id);
