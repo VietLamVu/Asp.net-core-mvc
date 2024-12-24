@@ -16,10 +16,26 @@ namespace Shopping_Tutorial.Areas.Admin.Controllers
         {
             _dataContext = Context;
         }
-        [HttpGet("Index")] 
-        public async Task<IActionResult> Index()
+        [HttpGet("Index")]
+        //public async Task<IActionResult> Index()
+        // {
+        //     return View(await _dataContext.Brands.OrderByDescending(p => p.Id).ToListAsync());
+        // }
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _dataContext.Brands.OrderByDescending(p => p.Id).ToListAsync());
+            List<BrandModel> Brands = _dataContext.Brands.ToList();
+            const int pageSize = 10;
+            if (page < 1)
+            {
+                page = 1;
+            }
+            int recsCount = Brands.Count();
+            var paper = new Paginate(recsCount, page, pageSize);
+            int recSkip = (page - 1) * pageSize; //VD: (trang 3 - 1) * 10 = 20
+            //category.Skip(20).Take(10).ToList(); data bat dau chay tu 20 va chay 10 item (chay den 30)
+            var data = Brands.Skip(recSkip).Take(paper.PageSize).ToList();
+            ViewBag.Paper = paper;
+            return View(data);
         }
 
         [Route("Create")]
